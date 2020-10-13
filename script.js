@@ -100,7 +100,8 @@ function map() {
             collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX , y: gy * 67 + 33.5 + mapY});
         }
         if (gameMap[i - 1] == 2){
-            let v
+            let v = 0;
+            if 
             c.fillStyle = 'red';
             c.beginPath();
             c.arc(gx * 67 + 33.5 + mapX + ox * 3, gy * 67 + 33.5 + mapY, 20/2, 0, 2 * Math.PI);

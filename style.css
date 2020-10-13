@@ -45,7 +45,9 @@ canvas {
     /*margin-top: 50px;*/
     border-radius: 20px;
     border: solid 10px rgb(119, 154, 219);
-    background-color: rgb(213, 236, 255);
+    background-image: url("https://www.poynter.org/wp-content/uploads/2019/07/Screen-Shot-2019-07-18-at-11.21.31-AM-1500x1051.png");
+    background-size: cover;
+    /*background-color: rgb(213, 236, 255);*/
 }
 footer {
     text-align: left;

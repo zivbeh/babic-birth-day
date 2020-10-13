@@ -9,7 +9,7 @@ var dy = 0;
 var size = 30;
 var run = false;
 var dir;
-var maxSpeed = 15;
+var maxSpeed = 4;
 var collide;
 var mapX = 0;
 var mapY = 0;
@@ -35,7 +35,7 @@ function reset() {
         canvas.style.backgroundColor = 'rgb(213, 236, 255)';
         run = false;
         x = 500;
-        y = 100;
+        y = 80;
         dx = 0;
         dy = 0;
         size = 30;
@@ -55,18 +55,19 @@ function reset() {
 }
 function resetMap(){
     gameMap = [
-        1,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,
-        0,0,0,0,0,0,1,0,0,0,0,0,3,1,0,0,0,0,0,0,
-        0,1,1,1,1,1,1,1,1,0,1,0,1,0,0,0,0,0,0,0,
-        0,1,0,0,0,1,2,0,0,0,1,0,1,0,0,0,0,0,0,0,
-        0,1,0,1,0,0,0,0,1,1,1,0,1,0,0,0,0,0,0,0,
-        0,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,2,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,1,
+        1,0,0,2,0,0,0,1,0,0,0,0,0,3,1,0,0,0,0,0,1,
+        1,0,2,3,1,2,1,1,1,1,0,1,0,1,0,0,0,0,0,0,1,
+        1,0,1,0,0,0,1,2,0,0,0,1,0,1,0,0,0,0,0,0,1,
+        1,0,2,0,2,0,0,0,0,1,1,1,0,1,0,0,0,0,0,0,1,
+        1,0,1,0,1,1,1,1,1,1,3,1,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,
+        1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
+        1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,
+        1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
     ]
 }
 resetMap();
@@ -95,11 +96,11 @@ function map() {
             collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX, y: gy * 67 + 33.5 + mapY});
         }
         if (gameMap[i - 1] == 1){
-            c.fillStyle = 'green'; //map
+            c.fillStyle = 'rgb(96 114 139)'; //map
             c.fillRect(gx * 67 + mapX, gy * 67 + mapY, 68, 68)
-            collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX, y: gy * 67 + 33.5 + mapY});
+            collition.push({place: i - 1, x: gx * 67.3 + 33.5 + mapX, y: gy * 67.3 + 33.5 + mapY});
         }
-        if (i % (gameMap.length / 12) == 0 && i != 0) {
+        if (i % (gameMap.length / 13) == 0 && i != 0) {
             gx = 0;
             gy++;
         } else {
@@ -166,26 +167,26 @@ function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height)
     if (run)
         requestAnimationFrame(animate)
-    dy -= 0.2;
+    //dy -= 0.2;
     if (dir == 'l')
-        dx += 0.4;
+        dx += 0.2;
     else if (dir == 'r')
-        dx -= 0.4;
+        dx -= 0.2;
     if (dir == 'u')
-        dy += 0.4;//up
+        dy += 0.2;//up
     else if (dir == 'd')
-        dy -= 0.4;//down
+        dy -= 0.2;//down
     else if (dy < 0)
-        dy += 0.4;
+        dy += 0.2;
     else if (dy > 0)
-        dy -= 0.4;
-    if (dy < 0.4 && dy > -0.4)
+        dy -= 0.2;
+    if (dy < 0.2 && dy > -0.2)
         dy = 0;
     else if (dx < 0)
-        dx += 0.4;
+        dx += 0.2;
     else if (dx > 0)
-        dx -= 0.4;
-    if (dx < 0.4 && dx > -0.4)
+        dx -= 0.2;
+    if (dx < 0.2 && dx > -0.2)
         dx = 0;
     // if (collide == 'l' && dir == 'r'){
     //     collide = null;
@@ -211,7 +212,10 @@ function animate() {
             gameMap[xy.place] = 0;
             collition.pop(xy.place);
             coins += 1;
-            textcoins.textContent = coins;
+            textcoins.textContent = coins; //here happy birth day if collected all coins!
+            if(coins === 3){
+                console.log('happybirtday')//play audio
+            }
         }
         if(Math.abs(disY) < m && Math.abs(disX) < m && gameMap[xy.place] == 1) {
             if (disY > 0 && disY > Math.abs(disX)) {
@@ -266,6 +270,8 @@ function animate() {
         dx = maxSpeed;
     if (dx < -maxSpeed)
         dx = -maxSpeed;
+    if (dy > maxSpeed)
+        dy = maxSpeed;
     map();
     player();
     if ((x < 400 && dx > 0) || (x > 600 && dx < 0))

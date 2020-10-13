@@ -10,8 +10,9 @@ var size = 30;
 var run = false;
 var dir;
 var maxSpeed = 4;
-var hueRotate = 0;
-var won = false
+var hueRotate = 350;
+var won = false;
+var song = new Audio("SONG.mp3");
 //var collide;
 var mapX = 0;
 var mapY = 0;
@@ -42,7 +43,7 @@ function reset() {
         dy = 0;
         size = 30;
         dir = null;
-        hueRotate = 0;
+        hueRotate = 350;
         won = false;
         l = false;
         r = false;
@@ -66,7 +67,7 @@ function resetMap(){
         1,0,0,2,0,0,0,1,0,0,0,0,0,3,1,0,0,0,0,0,1,
         1,0,2,3,1,2,1,1,1,1,0,1,0,1,0,0,0,0,0,0,1,
         1,0,1,0,0,0,1,2,0,0,0,1,0,1,0,0,0,0,0,0,1,
-        1,0,2,0,2,0,0,0,0,1,1,1,0,1,0,0,0,0,0,0,1,
+        1,0,0,0,2,0,0,0,0,1,1,1,0,1,0,0,0,0,0,0,1,
         1,0,1,0,1,1,1,1,1,1,3,1,0,0,0,0,0,0,0,0,1,
         1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,
         1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
@@ -102,7 +103,7 @@ function map() {
             collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX, y: gy * 67 + 33.5 + mapY});
         }
         if (gameMap[i - 1] == 1){
-            c.fillStyle = 'rgb(96 114 139)'; //map
+            c.fillStyle = 'rgb(96 114 139)';
             c.fillRect(gx * 67 + mapX, gy * 67 + mapY, 68, 68)
             collition.push({place: i - 1, x: gx * 67.3 + 33.5 + mapX, y: gy * 67.3 + 33.5 + mapY});
         }
@@ -115,56 +116,39 @@ function map() {
     }
 }
 
+var hap = document.getElementById('hap');
 let l = false;
 let r = false;
 let u = false;
 let d = false;
 document.addEventListener("keydown", function(event) {
     if (event.key == "ArrowLeft") {
-        l = true;
-        dir = 'l';
+        dx = 3;
     } else if (event.key == "ArrowUp"){
-        u = true;
-        dir = 'u';
+        dy = 3;
     } else if (event.key == "ArrowRight") {
-        r = true;
-        dir = 'r';
+        dx = -3;
     }
     else if (event.key == "ArrowDown"){
-        u = true;
-        dir = 'd';
+        dy = -3;
     }
     if (event.key == 'r')
         reset();
+    if (event.key == 's')
+        song.pause();
 });
 document.addEventListener('keyup', function(event) {
-    if (event.key == "ArrowLeft") {
-        if (r)
-            dir = 'r';
-        else
-            dir = null;
-        l = false;
+    if (event.key == "ArrowLeft" && dx == 3) {
+        dx = 0;
     }
-    else if (event.key == "ArrowRight") {
-        if (l)
-            dir = 'l';
-        else
-            dir = null;
-        r = false;
+    else if (event.key == "ArrowRight" && dx == -3) {
+        dx = 0;
     }
-    if (event.key == "ArrowUp") {
-        if (u)
-            dir = 'u';
-        else
-            dir = null;
-        u = false;
+    if (event.key == "ArrowUp" && dy == 3) {
+        dy = 0;
     }
-    else if (event.key == "ArrowDown") {
-        if (d)
-            dir = 'd';
-        else
-            dir = null;
-        d = false;
+    else if (event.key == "ArrowDown" && dx == -3) {
+        dy = 0;
     }
 });
 let a;
@@ -173,35 +157,10 @@ function animate() {
     if (run)
         requestAnimationFrame(animate)
     //dy -= 0.2;
-    if (dir == 'l')
-        dx += 0.2;
-    else if (dir == 'r')
-        dx -= 0.2;
-    else if (dir == 'u')
-        dy += 0.2;//up
-    else if (dir == 'd')
-        dy -= 0.2;//down
-    else if (dy < 0)
-        dy += 0.2;
-    else if (dy > 0)
-        dy -= 0.2;
-    if (dy < 0.2 && dy > -0.2)
-        dy = 0;
-    else if (dx < 0)
-        dx += 0.2;
-    else if (dx > 0)
-        dx -= 0.2;
-    if (dx < 0.2 && dx > -0.2)
-        dx = 0;
-    // if (collide == 'l' && dir == 'r'){
-    //     collide = null;
-    // } else if (collide == 'r' && dir == 'l'){
-    //     collide = null;
-    // } else if ((collide == 'd' || collide == 'u') && dy != -0.2)
-    //     collide = null;
-    // else if (!a) {
-    //     collide = null;
-    // }
+    if (dir == 'l') {
+        dx = 3;
+        dy 
+    }
     a = false;
     for (let i = 0; i < collition.length; i++) {
         let m = 33.5 + size / 2;
@@ -219,33 +178,26 @@ function animate() {
             coins += 1;
             textcoins.textContent = coins; //here happy birth day if collected all coins!
             if(coins === 1){
-                var hap = document.getElementById('hap');
-                if (won == true){
-                    hueRotate+=1;
-                    //}
-                    hap.style.filter = `hue-rotate(${hueRotate}deg)`;
-                } else {
-                    console.log('happybirtday')//play audio
-                    var song = new Audio("SONG.mp3");
-                    song.play();
-                    hap.style.transition = '3s';
-                    var body = $('body');
-                    const width = body.width();
-                    hap.style.marginLeft = `${width / 2 - 208}px`;
-                    canvas.style.transition = '2s';
-                    canvas.style.display = 'none';
-                    hap.style.display = 'block';
-                    won = true;
-                    coins = 0;
-                    textcoins.textContent = coins;
-                }
-                
-                // if(hueRotate==359){
-                //     hueRotate=1;
-                // } else {
-                // hueRotate+=1;
-                // //}
-                // hap.style.filter = `hue-rotate(${hueRotate}deg)`;
+                song.play();
+                hap.style.transition = '3s';
+                var body = $('body');
+                const width = body.width();
+                hap.style.marginLeft = `${width / 2 - 208}px`;
+                canvas.style.transition = '2s';
+                canvas.style.display = 'none';
+                hap.style.display = 'block';
+                won = true;
+                coins = 0;
+                textcoins.textContent = coins;
+                hap.animate([
+                    // keyframes
+                    { filter: 'hue-rotate(350deg)' }, 
+                    { filter: 'hue-rotate(0deg)' }
+                  ], { 
+                    // timing options
+                    duration: 5000,
+                    iterations: Infinity
+                });
             }
         }
         if(Math.abs(disY) < m && Math.abs(disX) < m && gameMap[xy.place] == 1) {
@@ -294,15 +246,6 @@ function animate() {
         if(Math.abs(disY) < m + 1 && Math.abs(disX) < m + 1)
             a = true;
     }
-    
-    if (dy < -maxSpeed)
-        dy = -maxSpeed;
-    if (dx > maxSpeed)
-        dx = maxSpeed;
-    if (dx < -maxSpeed)
-        dx = -maxSpeed;
-    if (dy > maxSpeed)
-        dy = maxSpeed;
     map();
     player();
     if ((x < 400 && dx > 0) || (x > 600 && dx < 0))

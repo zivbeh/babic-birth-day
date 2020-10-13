@@ -2,15 +2,17 @@ var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
 canvas.width = 1000;
 canvas.height = 800;
-var x = 500;
-var y = 100;
+var x = 350;
+var y = 370;
 var dx = 0;
 var dy = 0;
 var size = 30;
 var run = false;
 var dir;
 var maxSpeed = 4;
-var collide;
+var hueRotate = 0;
+var won = false
+//var collide;
 var mapX = 0;
 var mapY = 0;
 var coins = 0;
@@ -19,7 +21,7 @@ textcoins.textContent = coins;
 
 function player() {
     c.fillStyle = 'orange';
-    c.fillRect(x, y, size, size)
+    c.fillRect(x, y, size-5, size-5)
 }
 function reset() {
     var reset = document.getElementById('reset');
@@ -34,14 +36,18 @@ function reset() {
         canvas.style.transition = '0.1s';
         canvas.style.backgroundColor = 'rgb(213, 236, 255)';
         run = false;
-        x = 500;
-        y = 80;
+        x = 350;
+        y = 370;
         dx = 0;
         dy = 0;
         size = 30;
         dir = null;
+        hueRotate = 0;
+        won = false;
         l = false;
         r = false;
+        u = false;
+        d = false;
         mapX = 0;
         mapY = 0;
         c.clearRect(0, 0, canvas.width, canvas.height)
@@ -82,7 +88,7 @@ function map() {
         if (gameMap[i - 1] == 3){
             c.fillStyle = 'yellow';
             c.beginPath();
-            c.arc(gx * 67 + mapX+ 33.5, gy * 67+ 33.5 + mapY, 20/2, 0, 2 * Math.PI);
+            c.arc(gx * 67 + mapX+ 33.5, gy * 67 + 33.5 + mapY, 20/2, 0, 2 * Math.PI);
             c.fill();
             c.stroke();
             collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX , y: gy * 67 + 33.5 + mapY});
@@ -90,7 +96,7 @@ function map() {
         if (gameMap[i - 1] == 2){
             c.fillStyle = 'red';
             c.beginPath();
-            c.arc(gx * 67 + mapX+ 33.5, gy * 67+ 33.5 + mapY, 20/2, 0, 2 * Math.PI);
+            c.arc(gx * 67 + 33.5 + mapX, gy * 67 + 33.5 + mapY, 20/2, 0, 2 * Math.PI);
             c.fill();
             c.stroke();
             collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX, y: gy * 67 + 33.5 + mapY});
@@ -117,8 +123,7 @@ document.addEventListener("keydown", function(event) {
     if (event.key == "ArrowLeft") {
         l = true;
         dir = 'l';
-    }
-    else if (event.key == "ArrowUp"){
+    } else if (event.key == "ArrowUp"){
         u = true;
         dir = 'u';
     } else if (event.key == "ArrowRight") {
@@ -172,7 +177,7 @@ function animate() {
         dx += 0.2;
     else if (dir == 'r')
         dx -= 0.2;
-    if (dir == 'u')
+    else if (dir == 'u')
         dy += 0.2;//up
     else if (dir == 'd')
         dy -= 0.2;//down
@@ -204,17 +209,43 @@ function animate() {
         const xy = collition[i];
         let disX = xy.x - x - size / 2;
         let disY = xy.y - y - size / 2;
-        if(Math.abs(disY) < m && Math.abs(disX) < m && gameMap[xy.place] == 2) {
+        if(Math.abs(disY) < m2 && Math.abs(disX) < m2 && gameMap[xy.place] == 2) {
             GameOver();
             run = false;
         }
-        if(Math.abs(disY) < m2 && Math.abs(disX) < m2 && gameMap[xy.place] == 3) {
+        if(Math.abs(disY) < m2 && Math.abs(disX) < m2 && gameMap[xy.place] == 3 || won == true) {
             gameMap[xy.place] = 0;
             collition.pop(xy.place);
             coins += 1;
             textcoins.textContent = coins; //here happy birth day if collected all coins!
-            if(coins === 3){
-                console.log('happybirtday')//play audio
+            if(coins === 1){
+                var hap = document.getElementById('hap');
+                if (won == true){
+                    hueRotate+=1;
+                    //}
+                    hap.style.filter = `hue-rotate(${hueRotate}deg)`;
+                } else {
+                    console.log('happybirtday')//play audio
+                    var song = new Audio("SONG.mp3");
+                    song.play();
+                    hap.style.transition = '3s';
+                    var body = $('body');
+                    const width = body.width();
+                    hap.style.marginLeft = `${width / 2 - 208}px`;
+                    canvas.style.transition = '2s';
+                    canvas.style.display = 'none';
+                    hap.style.display = 'block';
+                    won = true;
+                    coins = 0;
+                    textcoins.textContent = coins;
+                }
+                
+                // if(hueRotate==359){
+                //     hueRotate=1;
+                // } else {
+                // hueRotate+=1;
+                // //}
+                // hap.style.filter = `hue-rotate(${hueRotate}deg)`;
             }
         }
         if(Math.abs(disY) < m && Math.abs(disX) < m && gameMap[xy.place] == 1) {
@@ -232,28 +263,28 @@ function animate() {
                 //     collide = 'd';
             } else if (disY < 0 && -disY > Math.abs(disX)) {
                 while (Math.abs(disY) < m) {
-                    y += 0.2
+                    y += 0.1;
                     disY = xy.y - y - size / 2;
                 }
                 dy = 0;
                 //collide = 'u';
             } else if (disX > 0 && disY < Math.abs(disX)) {
                 while (Math.abs(disX) < m) {
-                    x -= 0.2
+                    x -= 0.1;
                     disX = xy.x - x - size / 2;
                 }
                 dx = 0;
                 //collide = 'r';
             } else if (disX < 0 && -disY < Math.abs(disX)) {
                 while (Math.abs(disX) < m) {
-                    x += 0.2
+                    x += 0.1;
                     disX = xy.x - x - size / 2;
                 }
                 dx = 0;
                 //collide = 'l';
             } else if (disY > 0 && disY > Math.abs(disX)) {
                 while (Math.abs(disX) < m) {
-                    x += 0.2
+                    x += 0.1;
                     disX = xy.x - x - size / 2;
                 }
                 dx = 0;

@@ -13,10 +13,12 @@ var maxSpeed = 4;
 var hueRotate = 350;
 var won = false;
 var song = new Audio("SONG.mp3");
+var oxx = 0;
 //var collide;
 var mapX = 0;
 var mapY = 0;
 var coins = 0;
+var ox = 0;
 var textcoins = document.getElementById('Coins');
 textcoins.textContent = coins;
 
@@ -34,13 +36,14 @@ function reset() {
     } else {
         var over = document.getElementById('Over');
         over.style.display = 'none';
-        canvas.style.transition = '0.1s';
-        canvas.style.backgroundColor = 'rgb(213, 236, 255)';
         run = false;
-        x = 350;
-        y = 370;
+        song.pause();
+        ox = 0;
+        x = 100;
+        y = 100;
         dx = 0;
         dy = 0;
+        oxx = 0;
         size = 30;
         dir = null;
         hueRotate = 350;
@@ -73,12 +76,14 @@ function resetMap(){
         1,2,0,0,0,0,0,3,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,
         1,3,0,0,0,0,0,2,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,
         1,2,0,0,0,0,0,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,
-        1,3,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,
         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
     ]
 }
+
 resetMap();
 map();
+reset();
 player();
 var collition;
 function map() {
@@ -95,12 +100,13 @@ function map() {
             collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX , y: gy * 67 + 33.5 + mapY});
         }
         if (gameMap[i - 1] == 2){
+            let v
             c.fillStyle = 'red';
             c.beginPath();
-            c.arc(gx * 67 + 33.5 + mapX, gy * 67 + 33.5 + mapY, 20/2, 0, 2 * Math.PI);
+            c.arc(gx * 67 + 33.5 + mapX + ox * 3, gy * 67 + 33.5 + mapY, 20/2, 0, 2 * Math.PI);
             c.fill();
             c.stroke();
-            collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX, y: gy * 67 + 33.5 + mapY});
+            collition.push({place: i - 1, x: gx * 67 + 33.5 + mapX + ox, y: gy * 67 + 33.5 + mapY});
         }
         if (gameMap[i - 1] == 1){
             c.fillStyle = 'rgb(96 114 139)';
@@ -117,10 +123,6 @@ function map() {
 }
 
 var hap = document.getElementById('hap');
-let l = false;
-let r = false;
-let u = false;
-let d = false;
 document.addEventListener("keydown", function(event) {
     if (event.key == "ArrowLeft") {
         dx = 3;
@@ -133,8 +135,6 @@ document.addEventListener("keydown", function(event) {
     }
     if (event.key == 'r')
         reset();
-    if (event.key == 's')
-        song.pause();
 });
 document.addEventListener('keyup', function(event) {
     if (event.key == "ArrowLeft" && dx == 3)
@@ -146,17 +146,17 @@ document.addEventListener('keyup', function(event) {
     else if (event.key == "ArrowDown" && dy == -3)
         dy = 0;
 });
-let a;
+
 function animate() {
+    if (ox == 0)
+        oxx = 1;
+    else if (ox == 100)
+        oxx = -1;
+    ox += oxx;
     c.clearRect(0, 0, canvas.width, canvas.height)
     if (run)
         requestAnimationFrame(animate)
-    //dy -= 0.2;
-    if (dir == 'l') {
-        dx = 3;
-        dy 
-    }
-    a = false;
+    
     for (let i = 0; i < collition.length; i++) {
         let m = 33.5 + size / 2;
         let m2 = 10 + size / 2;
@@ -167,7 +167,7 @@ function animate() {
             GameOver();
             run = false;
         }
-        if(Math.abs(disY) < m2 && Math.abs(disX) < m2 && gameMap[xy.place] == 3 || won == true) {
+        if(Math.abs(disY) < m2 && Math.abs(disX) < m2 && gameMap[xy.place] == 3) {
             gameMap[xy.place] = 0;
             collition.pop(xy.place);
             coins += 1;
@@ -202,45 +202,34 @@ function animate() {
                     disY = xy.y - y - size / 2;
                 }
                 dy = 0;
-                // if (collide == 'l' || collide == 'dl')
-                //     collide = 'dl';
-                // else if (collide == 'r'|| collide == 'dr')
-                //     collide = 'dr';
-                // else 
-                //     collide = 'd';
             } else if (disY < 0 && -disY > Math.abs(disX)) {
                 while (Math.abs(disY) < m) {
                     y += 0.1;
                     disY = xy.y - y - size / 2;
                 }
                 dy = 0;
-                //collide = 'u';
             } else if (disX > 0 && disY < Math.abs(disX)) {
                 while (Math.abs(disX) < m) {
                     x -= 0.1;
                     disX = xy.x - x - size / 2;
                 }
                 dx = 0;
-                //collide = 'r';
             } else if (disX < 0 && -disY < Math.abs(disX)) {
                 while (Math.abs(disX) < m) {
                     x += 0.1;
                     disX = xy.x - x - size / 2;
                 }
                 dx = 0;
-                //collide = 'l';
             } else if (disY > 0 && disY > Math.abs(disX)) {
                 while (Math.abs(disX) < m) {
                     x += 0.1;
                     disX = xy.x - x - size / 2;
                 }
                 dx = 0;
-                //collide = 'l';
             }
-        }
-        if(Math.abs(disY) < m + 1 && Math.abs(disX) < m + 1)
-            a = true;
+        }  
     }
+    
     map();
     player();
     if ((x < 400 && dx > 0) || (x > 600 && dx < 0))
@@ -258,13 +247,12 @@ function GameOver() {
     var body = $('body');
     const width = body.width();
     over.style.marginLeft = `${width / 2 - 202}px`;
-    canvas.style.backgroundColor = 'black';
-    canvas.style.transition = '2s';
+    canvas.style.transition = '3s';
+    canvas.style.filter = 'brightness(0)';
     over.style.display = 'block';
     setTimeout(function() {
-        canvas.style.transition = '0.1s';
-        canvas.style.backgroundColor = 'rgb(213, 236, 255)';
+        canvas.style.transition = '0.3s';
+        canvas.style.filter = 'brightness(1)';
         reset();
-    }, 2000);
-    // c.clearRect(0, 0, canvas.width, canvas.height)
+    }, 2500);
 }
